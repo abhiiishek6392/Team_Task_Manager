@@ -3,6 +3,7 @@ import {
   CheckCircle2,
   ClipboardList,
   Clock3,
+  Gauge,
   ListTodo,
   SlidersHorizontal
 } from "lucide-react";
@@ -68,6 +69,28 @@ export default function MemberDashboard() {
   const doneTasks = tasks.filter((task) => task.status === TASK_STATUSES.DONE).length;
   const overdueTasks = tasks.filter(isOverdue).length;
   const completionRate = tasks.length ? Math.round((doneTasks / tasks.length) * 100) : 0;
+  const statusSummary = [
+    {
+      label: "To do",
+      value: todoTasks,
+      color: "bg-slate-500"
+    },
+    {
+      label: "In progress",
+      value: activeTasks,
+      color: "bg-amber-500"
+    },
+    {
+      label: "Done",
+      value: doneTasks,
+      color: "bg-emerald-500"
+    }
+  ];
+  const nextDueTask = useMemo(() => {
+    return tasks
+      .filter((task) => task.dueDate && task.status !== TASK_STATUSES.DONE)
+      .sort((firstTask, secondTask) => new Date(firstTask.dueDate) - new Date(secondTask.dueDate))[0];
+  }, [tasks]);
   const filteredTasks = useMemo(() => {
     if (activeFilter === "ALL") {
       return tasks;
@@ -182,79 +205,126 @@ export default function MemberDashboard() {
             </div>
           </div>
 
-          <div className="p-5">
-            {isLoading ? (
-              <div className="rounded-md border border-dashed border-slate-300 p-6 text-sm text-slate-600">
-                Loading your assigned tasks...
-              </div>
-            ) : tasks.length === 0 ? (
-              <EmptyState
-                icon={ListTodo}
-                title="No tasks assigned yet"
-                message="When an admin assigns work to you, it will appear here."
-              />
-            ) : filteredTasks.length === 0 ? (
-              <EmptyState
-                icon={ListTodo}
-                title="No matching tasks"
-                message="Try a different status filter."
-              />
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {filteredTasks.map((task) => (
-                  <article className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm" key={task.id}>
-                    <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-blue-700">
-                            {task.project?.name || "Project"}
-                          </p>
-                          <h3 className="mt-1 line-clamp-2 text-lg font-semibold text-slate-950">{task.title}</h3>
-                        </div>
-                        <StatusBadge status={task.status} />
-                      </div>
-                    </div>
-
-                    <div className="p-4">
-                      <p className="min-h-12 text-sm leading-6 text-slate-600">
-                        {task.description || "No description provided."}
-                      </p>
-
-                      <div className="mt-5 rounded-md border border-slate-200 p-3">
-                        <div className="mb-3 flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <CalendarDays size={16} />
-                            <span>{formatDueDate(task.dueDate)}</span>
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_18rem]">
+            <div className="p-5">
+              {isLoading ? (
+                <div className="rounded-md border border-dashed border-slate-300 p-6 text-sm text-slate-600">
+                  Loading your assigned tasks...
+                </div>
+              ) : tasks.length === 0 ? (
+                <EmptyState
+                  icon={ListTodo}
+                  title="No tasks assigned yet"
+                  message="When an admin assigns work to you, it will appear here."
+                />
+              ) : filteredTasks.length === 0 ? (
+                <EmptyState
+                  icon={ListTodo}
+                  title="No matching tasks"
+                  message="Try a different status filter."
+                />
+              ) : (
+                <div className="space-y-4">
+                  {filteredTasks.map((task) => (
+                    <article className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm" key={task.id}>
+                      <div className="grid gap-0 md:grid-cols-[minmax(0,1fr)_16rem]">
+                        <div className="border-b border-slate-200 bg-slate-50 px-4 py-4 md:border-b-0 md:border-r">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-blue-700">
+                                {task.project?.name || "Project"}
+                              </p>
+                              <h3 className="mt-1 line-clamp-2 text-lg font-semibold text-slate-950">{task.title}</h3>
+                            </div>
+                            <StatusBadge status={task.status} />
                           </div>
-                          {isOverdue(task) ? (
-                            <span className="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-200">
-                              Overdue
-                            </span>
-                          ) : null}
+                          <p className="mt-4 text-sm leading-6 text-slate-600">
+                            {task.description || "No description provided."}
+                          </p>
                         </div>
 
-                        <label className="field-label" htmlFor={`status-${task.id}`}>
-                          Status
-                        </label>
-                        <select
-                          className="form-input"
-                          id={`status-${task.id}`}
-                          value={task.status}
-                          onChange={(event) => handleStatusChange(task.id, event.target.value)}
-                          disabled={updatingTaskId === task.id}
-                        >
-                          {Object.values(TASK_STATUSES).map((status) => (
-                            <option key={status} value={status}>
-                              {statusLabels[status]}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="p-4">
+                          <div className="mb-4 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                              <CalendarDays size={16} />
+                              <span>{formatDueDate(task.dueDate)}</span>
+                            </div>
+                            {isOverdue(task) ? (
+                              <span className="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-200">
+                                Overdue
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <label className="field-label" htmlFor={`status-${task.id}`}>
+                            Status
+                          </label>
+                          <select
+                            className="form-input"
+                            id={`status-${task.id}`}
+                            value={task.status}
+                            onChange={(event) => handleStatusChange(task.id, event.target.value)}
+                            disabled={updatingTaskId === task.id}
+                          >
+                            {Object.values(TASK_STATUSES).map((status) => (
+                              <option key={status} value={status}>
+                                {statusLabels[status]}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {!isLoading && tasks.length > 0 ? (
+              <aside className="border-t border-slate-200 bg-slate-50 p-5 lg:border-l lg:border-t-0">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-blue-700 ring-1 ring-slate-200">
+                    <Gauge size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-950">Workload</h3>
+                    <p className="text-sm text-slate-600">{tasks.length} assigned task{tasks.length === 1 ? "" : "s"}</p>
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="font-medium text-slate-700">Completion</span>
+                    <span className="font-semibold text-slate-950">{completionRate}%</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                    <div className="h-full rounded-full bg-emerald-500" style={{ width: `${completionRate}%` }} />
+                  </div>
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  {statusSummary.map((item) => (
+                    <div className="flex items-center justify-between gap-3 text-sm" key={item.label}>
+                      <div className="flex items-center gap-2 text-slate-600">
+                        <span className={`h-2.5 w-2.5 rounded-full ${item.color}`} />
+                        <span>{item.label}</span>
+                      </div>
+                      <span className="font-semibold text-slate-950">{item.value}</span>
                     </div>
-                  </article>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+
+                <div className="mt-6 rounded-md border border-slate-200 bg-white p-4">
+                  <p className="text-sm font-semibold text-slate-950">Next due</p>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {nextDueTask ? nextDueTask.title : "No open due dates"}
+                  </p>
+                  <p className="mt-3 text-sm font-medium text-slate-700">
+                    {nextDueTask ? formatDueDate(nextDueTask.dueDate) : "All clear"}
+                  </p>
+                </div>
+              </aside>
+            ) : null}
           </div>
         </section>
       </section>
