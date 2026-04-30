@@ -5,9 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    host: true // Helpful for Railway deployments
+    host: true, // Listen on all local IPs
   },
   preview: {
-    allowedHosts: true // This tells Vite to allow the Railway domain
+    port: 5173,
+    host: true,
+    allowedHosts: true // Using a boolean true often bypasses the array requirement in newer Vite versions
   }
 });
