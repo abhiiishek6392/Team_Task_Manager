@@ -304,7 +304,7 @@ export default function AdminDashboard() {
           <Alert variant="success">{success}</Alert>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[0.85fr_1.35fr]">
+        <div className="grid gap-6 xl:grid-cols-[0.75fr_1.5fr]">
           <div className="space-y-6">
             <section className="panel">
               <div className="panel-body">
@@ -493,13 +493,13 @@ export default function AdminDashboard() {
                   />
                 </div>
               ) : (
-                <div className="grid gap-0 lg:grid-cols-3">
+                <div className="grid gap-4 p-4 lg:grid-cols-3">
                   {statusColumns.map((column) => {
                     const columnTasks = tasks.filter((task) => task.status === column.status);
 
                     return (
-                      <div className="border-b border-slate-200 p-4 last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0" key={column.status}>
-                        <div className="mb-3 flex items-center justify-between gap-3">
+                      <div className="min-w-0" key={column.status}>
+                        <div className="mb-4 flex items-center justify-between gap-3">
                           <h3 className="text-sm font-semibold text-slate-700">{column.title}</h3>
                           <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
                             {columnTasks.length}
@@ -508,15 +508,25 @@ export default function AdminDashboard() {
 
                         <div className="space-y-3">
                           {columnTasks.length === 0 ? (
-                            <p className="rounded-md border border-dashed border-slate-300 px-3 py-6 text-center text-sm text-slate-500">
+                            <p className="flex min-h-28 items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
                               {column.empty}
                             </p>
                           ) : (
                             columnTasks.map((task) => (
-                              <article className="rounded-md border border-slate-200 bg-slate-50 p-3" key={task.id}>
-                                <div className="mb-2 flex items-start justify-between gap-2">
-                                  <p className="line-clamp-2 text-sm font-semibold text-slate-950">{task.title}</p>
-                                  <div className="flex shrink-0 items-center gap-2">
+                              <article className="rounded-md border border-slate-200 bg-white p-4 shadow-sm" key={task.id}>
+                                <p className="line-clamp-2 text-base font-semibold leading-6 text-slate-950">{task.title}</p>
+
+                                <p className="mt-2 truncate text-sm text-slate-600">
+                                  {task.project?.name || "Project"} - {task.assignee?.name || "Unassigned"}
+                                </p>
+
+                                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                                    <CalendarDays size={14} />
+                                    <span>{formatDueDate(task.dueDate)}</span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
                                     <StatusBadge status={task.status} />
                                     <button
                                       aria-label={`Delete ${task.title}`}
@@ -528,13 +538,6 @@ export default function AdminDashboard() {
                                       <Trash2 size={15} />
                                     </button>
                                   </div>
-                                </div>
-                                <p className="truncate text-xs text-slate-600">
-                                  {task.project?.name || "Project"} - {task.assignee?.name || "Unassigned"}
-                                </p>
-                                <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-                                  <CalendarDays size={14} />
-                                  <span>{formatDueDate(task.dueDate)}</span>
                                 </div>
                               </article>
                             ))

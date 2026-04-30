@@ -96,12 +96,6 @@ Create `frontend/.env`:
 VITE_API_URL="http://localhost:5000/api"
 ```
 
-For deployment, set `VITE_API_URL` to the deployed backend API URL, for example:
-
-```env
-VITE_API_URL="https://your-backend.up.railway.app/api"
-```
-
 ## Local Setup
 
 ### 1. Clone the repository
@@ -227,84 +221,4 @@ Admins can view and create all tasks. Members only see their assigned tasks and 
 9. Confirm the assigned task appears.
 10. Change the status from `TODO` to `IN_PROGRESS` or `DONE`.
 
-## Railway Deployment Notes
 
-This project can be deployed with separate Railway services for backend and frontend.
-
-### Backend service
-
-Set the backend root directory to:
-
-```text
-backend
-```
-
-Add these environment variables in Railway:
-
-```env
-DATABASE_URL="your-production-postgresql-url"
-JWT_SECRET="your-production-jwt-secret"
-```
-
-Do not set `PORT` manually unless you specifically configure a custom port. Railway provides `PORT` automatically, and the backend already reads `process.env.PORT`.
-
-Build command:
-
-```bash
-npm run build
-```
-
-Pre-deploy command:
-
-```bash
-npm run db:deploy
-```
-
-Start command:
-
-```bash
-npm start
-```
-
-### Frontend service
-
-Set the frontend root directory to:
-
-```text
-frontend
-```
-
-Add this environment variable:
-
-```env
-VITE_API_URL="https://your-backend-service-url/api"
-```
-
-Build command:
-
-```bash
-npm run build
-```
-
-Start command:
-
-```bash
-npm start
-```
-
-## Demo Credentials
-
-Create demo users through the register page:
-
-```text
-Admin: admin@test.com
-Member: member@test.com
-Password: choose any test password
-```
-
-## Submission Checklist
-
-- Live application URL
-- GitHub repository URL
-- README file
-- 2-5 minute demo video

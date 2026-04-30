@@ -343,63 +343,6 @@ The UI was improved with:
 
 ---
 
-## Phase 6: Deployment
-
-The project is structured as a monorepo with separate backend and frontend folders:
-
-```text
-backend/
-frontend/
-```
-
-The recommended Railway deployment strategy is to create two Railway services from the same GitHub repository.
-
-### Backend Service
-
-The backend service should use:
-
-```text
-backend
-```
-
-as the root directory.
-
-Required environment variables:
-
-```env
-DATABASE_URL="production-postgresql-url"
-JWT_SECRET="production-jwt-secret"
-```
-
-Railway provides the runtime `PORT` automatically, and the backend reads `process.env.PORT`. The backend connects to the PostgreSQL database and serves the REST API.
-
-### Frontend Service
-
-The frontend service should use:
-
-```text
-frontend
-```
-
-as the root directory.
-
-Required environment variable:
-
-```env
-VITE_API_URL="https://your-backend-service-url/api"
-```
-
-The frontend is built with Vite and communicates with the deployed backend through the `VITE_API_URL`.
-
-### Why This Approach?
-
-- Deploying frontend and backend separately matches the monorepo structure.
-- Both services can point to the same GitHub repository while using different root directories.
-- Environment variables keep deployment configuration separate from source code.
-- The frontend can easily switch between local and production APIs using `VITE_API_URL`.
-
----
-
 ## Final Result
 
 By the end of development, the application supports the complete assignment flow:
@@ -413,4 +356,4 @@ By the end of development, the application supports the complete assignment flow
 7. REST APIs are protected with JWT and role-based middleware.
 8. PostgreSQL stores users, projects, and tasks with proper relationships.
 
-This makes the application functionally complete and ready for GitHub submission, Railway deployment, and demo recording.
+This makes the application functionally complete and ready for local testing, review, and demonstration.
