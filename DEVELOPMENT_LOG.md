@@ -369,10 +369,9 @@ Required environment variables:
 ```env
 DATABASE_URL="production-postgresql-url"
 JWT_SECRET="production-jwt-secret"
-PORT=5000
 ```
 
-The backend connects to the PostgreSQL database and serves the REST API.
+Railway provides the runtime `PORT` automatically, and the backend reads `process.env.PORT`. The backend connects to the PostgreSQL database and serves the REST API.
 
 ### Frontend Service
 
@@ -415,4 +414,3 @@ By the end of development, the application supports the complete assignment flow
 8. PostgreSQL stores users, projects, and tasks with proper relationships.
 
 This makes the application functionally complete and ready for GitHub submission, Railway deployment, and demo recording.
-

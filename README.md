@@ -244,15 +244,25 @@ Add these environment variables in Railway:
 ```env
 DATABASE_URL="your-production-postgresql-url"
 JWT_SECRET="your-production-jwt-secret"
-PORT=5000
 ```
 
-Build/start commands:
+Do not set `PORT` manually unless you specifically configure a custom port. Railway provides `PORT` automatically, and the backend already reads `process.env.PORT`.
+
+Build command:
 
 ```bash
-npm install
-npx prisma generate
-npx prisma migrate deploy
+npm run build
+```
+
+Pre-deploy command:
+
+```bash
+npm run db:deploy
+```
+
+Start command:
+
+```bash
 npm start
 ```
 
@@ -279,7 +289,7 @@ npm run build
 Start command:
 
 ```bash
-npm run preview -- --host 0.0.0.0 --port $PORT
+npm start
 ```
 
 ## Demo Credentials

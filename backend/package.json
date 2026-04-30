@@ -4,8 +4,10 @@
   "description": "Backend API for the Team Task Manager app.",
   "main": "index.js",
   "scripts": {
+    "build": "prisma generate",
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "db:deploy": "prisma migrate deploy",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
